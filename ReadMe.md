@@ -25,7 +25,12 @@ go get github.com/denisenkom/go-mssqldb
 1. **Start SQL Server** (ensure port 1433 is open and TCP/IP enabled)
 2. **Run the app**:
 ```bash
+
 go run main.go
+✅ Step 4: Open your browser
+Go to:
+👉 http://localhost:8092/
+You’ll see your index.html load and connect to your Go API automatically.
 
 ---
 # Example requests
