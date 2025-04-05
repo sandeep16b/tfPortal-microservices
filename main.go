@@ -13,5 +13,6 @@ func main() {
 	data.InitDB()
 	http.HandleFunc("/posts", handlers.PostsHandler)
 	fmt.Println("Server running at http://localhost:8092")
+	http.Handle("/", http.FileServer(http.Dir("./public")))
 	log.Fatal(http.ListenAndServe(":8092", nil))
 }

@@ -15,6 +15,10 @@ GoProject/
 └── go.mod # Go module file
 
 ---
+## Sql Driver
+Run the below cmd
+go get github.com/denisenkom/go-mssqldb
+
 
 ## 🚀 Running the App
 

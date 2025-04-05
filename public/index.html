@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GoPost API Client</title>
+  <script>
+    async function fetchPosts() {
+      const res = await fetch("http://localhost:8092/posts");
+      const posts = await res.json();
+      const table = document.getElementById("postTable");
+      table.innerHTML = "<tr><th>ID</th><th>UserID</th><th>Title</th><th>Body</th></tr>";
+      posts.forEach(post => {
+        table.innerHTML += `<tr><td>${post.id}</td><td>${post.userId}</td><td>${post.title}</td><td>${post.body}</td></tr>`;
+      });
+    }
+
+    async function createPost() {
+  const userId = parseInt(document.getElementById("userId").value);
+  const title = document.getElementById("title").value;
+  const body = document.getElementById("body").value;
+
+  const res = await fetch("http://localhost:8092/posts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, title, body })
+  });
+
+  if (res.ok) {
+    alert("✅ Post created successfully!");
+    fetchPosts();
+    document.getElementById("postForm").reset();
+  } else {
+    const errMsg = await res.text();
+    alert("❌ Failed to create post.\n\n" + errMsg);
+  }
+}
+
+
+    window.onload = fetchPosts;
+  </script>
+</head>
+<body>
+  <h2>📚 Posts</h2>
+  <table border="1" id="postTable"></table>
+
+  <h3>➕ Add New Post</h3>
+  <form id="postForm" onsubmit="event.preventDefault(); createPost();">
+    <label>UserID: <input type="number" id="userId" required></label><br>
+    <label>Title: <input type="text" id="title" required></label><br>
+    <label>Body: <textarea id="body" required></textarea></label><br>
+    <button type="submit">Post</button>
+  </form>
+</body>
+</html>
