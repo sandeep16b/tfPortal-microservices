@@ -6,7 +6,8 @@ import (
 )
 
 func GetFilteredPosts() ([]models.Post, error) {
-	posts, err := data.FetchPostsFromAPI()
+	posts, err := data.FetchPostsFromDB()
+
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +25,5 @@ func SavePost(post models.Post) (models.Post, error) {
 	if post.Title == "" {
 		post.Title = "Untitled Post"
 	}
-	return data.SavePostToAPI(post)
+	return data.SavePostToDB(post)
 }

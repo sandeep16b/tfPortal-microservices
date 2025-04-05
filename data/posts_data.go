@@ -1,42 +1,35 @@
 package data
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
-
 	"goproject/models"
 )
 
-func FetchPostsFromAPI() ([]models.Post, error) {
-	resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
+func FetchPostsFromDB() ([]models.Post, error) {
+	rows, err := DB.Query("SELECT id, userId, title, body FROM Posts")
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer rows.Close()
 
 	var posts []models.Post
-	if err := json.NewDecoder(resp.Body).Decode(&posts); err != nil {
-		return nil, err
+
+	for rows.Next() {
+		var post models.Post
+		err := rows.Scan(&post.ID, &post.UserID, &post.Title, &post.Body)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
 	}
+
 	return posts, nil
 }
 
-func SavePostToAPI(post models.Post) (models.Post, error) {
-	data, err := json.Marshal(post)
+func SavePostToDB(post models.Post) (models.Post, error) {
+	query := "INSERT INTO Posts (userId, title, body) OUTPUT INSERTED.id VALUES (@p1, @p2, @p3)"
+	err := DB.QueryRow(query, post.UserID, post.Title, post.Body).Scan(&post.ID)
 	if err != nil {
 		return models.Post{}, err
 	}
-
-	resp, err := http.Post("https://jsonplaceholder.typicode.com/posts", "application/json", bytes.NewBuffer(data))
-	if err != nil {
-		return models.Post{}, err
-	}
-	defer resp.Body.Close()
-
-	var created models.Post
-	if err := json.NewDecoder(resp.Body).Decode(&created); err != nil {
-		return models.Post{}, err
-	}
-	return created, nil
+	return post, nil
 }
