@@ -27,3 +27,4 @@ Thumbs.db
 
 # Go workspace files
 go.sum
+.env

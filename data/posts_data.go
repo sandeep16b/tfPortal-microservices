@@ -26,10 +26,16 @@ func FetchPostsFromDB() ([]models.Post, error) {
 }
 
 func SavePostToDB(post models.Post) (models.Post, error) {
-	query := "INSERT INTO Posts (userId, title, body) OUTPUT INSERTED.id VALUES (@p1, @p2, @p3)"
-	err := DB.QueryRow(query, post.UserID, post.Title, post.Body).Scan(&post.ID)
+	result, err := DB.Exec("INSERT INTO Posts (userId, title, body) VALUES (?, ?, ?)", post.UserID, post.Title, post.Body)
 	if err != nil {
 		return models.Post{}, err
 	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return models.Post{}, err
+	}
+
+	post.ID = int(id)
 	return post, nil
 }
