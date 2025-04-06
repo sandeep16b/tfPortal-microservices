@@ -23,6 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal("❌ Error loading .env file")
 	}
+	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
 	data.InitDB()
 	http.HandleFunc("/posts", handlers.PostsHandler)
 	fmt.Println("Server running at http://localhost:8092")
