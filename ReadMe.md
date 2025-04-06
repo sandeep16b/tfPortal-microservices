@@ -19,11 +19,22 @@ GoProject/
 Run the below cmd
 go get github.com/denisenkom/go-mssqldb
 
+## AWS
+[AWS Guide](docs/aws.md)
+
+## Jenkins
+[Jenkins Guide](docs/jenkins.md)
 
 ## 🚀 Running the App
 
-1. **Start SQL Server** (ensure port 1433 is open and TCP/IP enabled)
-2. **Run the app**:
+1. For MSSQL **Start SQL Server** (ensure port 1433 is open and TCP/IP enabled)
+2. For MySQL 
+    a. Install Custom
+    b. tools needed: MySQL Server, Workbench, Shell (optional)
+    c. TCP/IP: 3306
+    d. Open Windows Firewall ports — Important if you access MySQL from another tool or app.
+    e. Setup with legacy auth method
+3. **Run the app**:
 ```bash
 
 go run main.go
