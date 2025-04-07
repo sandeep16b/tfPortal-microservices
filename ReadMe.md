@@ -16,8 +16,7 @@ GoProject/
 
 ---
 ## Sql Driver
-Run the below cmd
-go get github.com/denisenkom/go-mssqldb
+[SQL Guide](docs/sql.md)
 
 ## AWS
 [AWS Guide](docs/aws.md)
@@ -34,42 +33,24 @@ go get github.com/denisenkom/go-mssqldb
     c. TCP/IP: 3306
     d. Open Windows Firewall ports — Important if you access MySQL from another tool or app.
     e. Setup with legacy auth method
+
 3. **Run the app**:
 ```bash
-
 go run main.go
 ✅ Step 4: Open your browser
 Go to:
 👉 http://localhost:8092/
 You’ll see your index.html load and connect to your Go API automatically.
+```
 
 ---
 # Example requests
+```go
 curl -X POST http://localhost:8092/posts \
   -H "Content-Type: application/json" \
   -d "{\"userId\":1,\"title\":\"\",\"body\":\"This is a test\"}"
-
----
-# Check if SQL Server port is open
-Test-NetConnection -ComputerName localhost -Port 1433
-
-# Allow SQL Server port 1433 through firewall
-New-NetFirewallRule -DisplayName "Allow SQL Port 1433" -Direction Inbound -Protocol TCP -LocalPort 1433 -Action Allow
-
-# Reset OneDrive if sync breaks
-%localappdata%\Microsoft\OneDrive\OneDrive.exe /reset
-
-# Restart SQL Server service
-Restart-Service -Name 'MSSQL$SQLEXPRESS'
-
-# Start SQL Server Browser service (for named instances)
-Set-Service -Name 'SQLBrowser' -StartupType Automatic
-Start-Service -Name 'SQLBrowser'
-
-
----
+```
+---------------------------------------
 MIT License
-
 © 2025 Sandeep B. All rights reserved.
-
----
+---------------------------------------
