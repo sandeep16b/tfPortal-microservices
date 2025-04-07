@@ -8,6 +8,7 @@ import (
 	"goproject/services"
 )
 
+// PostsHandler handles the post-related routes
 func PostsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:

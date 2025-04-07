@@ -26,7 +26,8 @@ func main() {
 	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
 	data.InitDB()
 	http.HandleFunc("/posts", handlers.PostsHandler)
-	fmt.Println("Server running at http://localhost:8092")
+	http.HandleFunc("/users", handlers.UsersHandler)
+	fmt.Println("fmt: Server running at http://localhost:8092")
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 	log.Fatal(http.ListenAndServe("0.0.0.0:8092", nil))
 }

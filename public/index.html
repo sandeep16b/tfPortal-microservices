@@ -15,28 +15,61 @@
     }
 
     async function createPost() {
-  const userId = parseInt(document.getElementById("userId").value);
-  const title = document.getElementById("title").value;
-  const body = document.getElementById("body").value;
+      const userId = parseInt(document.getElementById("postUserId").value);
+      const title = document.getElementById("postTitle").value;
+      const body = document.getElementById("postBody").value;
 
-  const res = await fetch("/posts", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, title, body })
-  });
+      const res = await fetch("/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, title, body })
+      });
 
-  if (res.ok) {
-    alert("✅ Post created successfully!");
-    fetchPosts();
-    document.getElementById("postForm").reset();
-  } else {
-    const errMsg = await res.text();
-    alert("❌ Failed to create post.\n\n" + errMsg);
-  }
-}
+      if (res.ok) {
+        alert("✅ Post created successfully!");
+        fetchPosts();
+        document.getElementById("postForm").reset();
+      } else {
+        const errMsg = await res.text();
+        alert("❌ Failed to create post.\n\n" + errMsg);
+      }
+    }
 
+    async function fetchUsers() {
+      const res = await fetch("/users");
+      const users = await res.json();
+      const table = document.getElementById("userTable");
+      table.innerHTML = "<tr><th>ID</th><th>Name</th><th>Username</th><th>Email</th></tr>";
+      users.forEach(user => {
+        table.innerHTML += `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
+      });
+    }
 
-    window.onload = fetchPosts;
+    async function createUser() {
+      const name = document.getElementById("userName").value;
+      const username = document.getElementById("userUsername").value;
+      const email = document.getElementById("userEmail").value;
+
+      const res = await fetch("/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, username, email })
+      });
+
+      if (res.ok) {
+        alert("✅ User created successfully!");
+        fetchUsers();
+        document.getElementById("userForm").reset();
+      } else {
+        const errMsg = await res.text();
+        alert("❌ Failed to create user.\n\n" + errMsg);
+      }
+    }
+
+    window.onload = function() {
+      fetchPosts();
+      fetchUsers();
+    };
   </script>
 </head>
 <body>
@@ -45,10 +78,23 @@
 
   <h3>➕ Add New Post</h3>
   <form id="postForm" onsubmit="event.preventDefault(); createPost();">
-    <label>UserID: <input type="number" id="userId" required></label><br>
-    <label>Title: <input type="text" id="title" required></label><br>
-    <label>Body: <textarea id="body" required></textarea></label><br>
+    <label>UserID: <input type="number" id="postUserId" required></label><br>
+    <label>Title: <input type="text" id="postTitle" required></label><br>
+    <label>Body: <textarea id="postBody" required></textarea></label><br>
     <button type="submit">Post</button>
+  </form>
+
+  <hr>
+
+  <h2>👤 Users</h2>
+  <table border="1" id="userTable"></table>
+
+  <h3>➕ Add New User</h3>
+  <form id="userForm" onsubmit="event.preventDefault(); createUser();">
+    <label>Name: <input type="text" id="userName" required></label><br>
+    <label>Username: <input type="text" id="userUsername" required></label><br>
+    <label>Email: <input type="email" id="userEmail" required></label><br>
+    <button type="submit">Create User</button>
   </form>
 </body>
 </html>
