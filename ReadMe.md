@@ -22,6 +22,9 @@ go get github.com/denisenkom/go-mssqldb
 ## AWS
 [AWS Guide](docs/aws.md)
 
+## GIT
+[GIT Guide](docs/git.md)
+
 ## Jenkins
 [Jenkins Guide](docs/jenkins.md)
 
