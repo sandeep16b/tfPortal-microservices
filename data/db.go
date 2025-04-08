@@ -28,7 +28,7 @@ func InitDB() {
 	}
 
 	// If you have to create or update schema in db, uncomment below line
-	//InitTables()
+	InitTables()
 
 	// Ensure the DB is reachable
 	err = DB.Ping()
@@ -41,16 +41,29 @@ func InitDB() {
 
 // Create the necessary tables if they do not exist
 func InitTables() {
-	// Creating Users table
+
+	// Creating Comments table
 	_, err := DB.Exec(`
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS comments (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            comment VARCHAR(300) NOT NULL,
+            postId int NOT NULL UNIQUE
+        );
+    `)
+	if err != nil {
+		log.Fatal("Error creating comments table: ", err)
+	}
+
+	// Creating Users table
+	_, err = DB.Exec(`
+	CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE
         );
-    `)
+	`)
 	if err != nil {
-		log.Fatal("Error creating users table: ", err)
+		log.Fatal("Error creating posts table: ", err)
 	}
 
 	// Creating Posts table (if needed)
