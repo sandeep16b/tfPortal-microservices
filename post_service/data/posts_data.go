@@ -1,7 +1,7 @@
 package data
 
 import (
-	"goproject/models"
+	"goproject/post_service/models"
 )
 
 func FetchPostsFromDB() ([]models.Post, error) {
