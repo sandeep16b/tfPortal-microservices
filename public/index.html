@@ -5,7 +5,7 @@
   <title>Go Project</title>
   <script>
     async function fetchPosts() {
-      const res = await fetch("/posts");
+      const res = await fetch("http://localhost:8092/posts"); // Assuming post_service runs on port 8092
       const posts = await res.json();
       const table = document.getElementById("postTable");
       table.innerHTML = "<tr><th>ID</th><th>UserID</th><th>Title</th><th>Body</th></tr>";
@@ -19,7 +19,7 @@
       const title = document.getElementById("postTitle").value;
       const body = document.getElementById("postBody").value;
 
-      const res = await fetch("/posts", {
+      const res = await fetch("http://localhost:8092/posts", {  // Assuming post_service runs on port 8092
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, title, body })
@@ -36,7 +36,7 @@
     }
 
     async function fetchUsers() {
-      const res = await fetch("/users");
+      const res = await fetch("http://localhost:8093/users");
       const users = await res.json();
       const table = document.getElementById("userTable");
       table.innerHTML = "<tr><th>ID</th><th>Name</th><th>Username</th><th>Email</th></tr>";
@@ -50,7 +50,7 @@
       const username = document.getElementById("userUsername").value;
       const email = document.getElementById("userEmail").value;
 
-      const res = await fetch("/users", {
+      const res = await fetch("http://localhost:8093/users", { // Assuming user_service runs on port 8093
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, username, email })

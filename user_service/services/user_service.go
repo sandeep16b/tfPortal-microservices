@@ -2,13 +2,15 @@ package services
 
 import (
 	"fmt"
-	"goproject/data"
-	"goproject/models"
+	"goproject/user_service/data"
+	"goproject/user_service/models"
 )
 
 // GetUsers returns all users
 func GetAllUsers() ([]models.User, error) {
+	fmt.Println("start: GetAllUsers")
 	var users, err = data.GetAllUsers()
+	fmt.Println("end: GetAllUsers")
 	if err != nil {
 		fmt.Println("Error fetching users: ", err)
 		return nil, err

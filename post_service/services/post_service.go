@@ -1,8 +1,8 @@
 package services
 
 import (
-	"goproject/data"
-	"goproject/models"
+	"goproject/post_service/data"
+	"goproject/post_service/models"
 )
 
 func GetFilteredPosts() ([]models.Post, error) {

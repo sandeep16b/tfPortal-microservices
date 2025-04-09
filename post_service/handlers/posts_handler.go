@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"goproject/models"
-	"goproject/services"
+	"goproject/post_service/models"
+	"goproject/post_service/services"
 )
 
 // PostsHandler handles the post-related routes
