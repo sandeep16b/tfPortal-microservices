@@ -1,6 +1,6 @@
 module goproject
 
-go 1.24.2
+go 1.23.6
 
 require (
 	github.com/go-sql-driver/mysql v1.9.2

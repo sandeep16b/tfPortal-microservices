@@ -39,6 +39,7 @@ GoProject/
 
 3. **Run the app**:
 ```bash
+go mod init
 go run main.go
 ✅ Step 4: Open your browser
 Go to:
