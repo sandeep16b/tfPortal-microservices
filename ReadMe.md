@@ -56,5 +56,5 @@ curl -X POST http://localhost:8092/posts \
 ```
 ---------------------------------------
 MIT License
-© 2025 Sandeep B. All rights reserved.
+© 2025 Sandeep B and Ramana. All rights reserved.
 ---------------------------------------
