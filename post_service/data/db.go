@@ -28,7 +28,7 @@ func InitDB() {
 	}
 
 	// If you have to create or update schema in db, uncomment below line
-	//InitTables()
+	InitTables()
 
 	// Ensure the DB is reachable
 	err = DB.Ping()
