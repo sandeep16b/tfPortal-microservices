@@ -5,25 +5,40 @@ window.onload = function () {
   }
 };
 
-// login.js
 async function login(event) {
   event.preventDefault();
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  const res = await fetch("http://localhost:8080/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+  // ✅ Client-side validations
+  if (!username) {
+    alert("⚠️ Please enter a username");
+    return;
+  }
 
-  const data = await res.json();
+  if (!password) {
+    alert("⚠️ Please enter a password");
+    return;
+  }
 
-  if (res.ok && data.token) {
-    localStorage.setItem("token", data.token);
-    window.location.href = "/user/home.html";
-  } else {
-    alert("❌ Login failed: " + (data.error || "Invalid credentials"));
+  try {
+    const res = await fetch("http://localhost:8080/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      window.location.href = "/user/home.html";
+    } else {
+      alert("❌ Invalid username or password");
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("❌ Server error. Please try again.");
   }
 }
