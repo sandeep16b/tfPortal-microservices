@@ -10,16 +10,14 @@ console.log("✅ user home.js loaded");
     return;
   }
 
-  let payload;
-  try {
-    payload = JSON.parse(atob(token.split('.')[1]));
-  } catch (err) {
-    console.error("❌ Failed to decode token:", err);
+  const payload = JSON.parse(atob(token.split('.')[1])); 
+
+  if (isTokenExpired(token)) {
+    alert("⚠️ Session expired. Please login again.");
     localStorage.removeItem("token");
-    window.location.href = "/user/index.html";
+    window.location.href = "/user/index.html"; // or /post/index.html
     return;
   }
-
   const now = Math.floor(Date.now() / 1000);
   console.log("⏱️ Now:", now, "| Exp:", payload.exp);
 

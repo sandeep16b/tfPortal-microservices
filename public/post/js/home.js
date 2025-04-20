@@ -10,13 +10,11 @@ console.log("✅ post home.js loaded");
     return;
   }
 
-  let payload;
-  try {
-    payload = JSON.parse(atob(token.split('.')[1]));
-  } catch (err) {
-    console.error("❌ Failed to decode token:", err);
+  const payload = JSON.parse(atob(token.split('.')[1])); 
+  if (isTokenExpired(token)) {
+    alert("⚠️ Session expired. Please login again.");
     localStorage.removeItem("token");
-    window.location.href = "/post/index.html";
+    window.location.href = "/post/index.html"; // or /post/index.html
     return;
   }
 

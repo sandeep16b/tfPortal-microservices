@@ -1,21 +1,3 @@
-function isTokenExpired(token) {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Math.floor(Date.now() / 1000);
-
-    console.log("🧾 JWT payload:", payload);
-    console.log("⏰ Current time:", now);
-    console.log("⌛ Expiry time:", payload.exp);
-    console.log("⌛ Expires in:", payload.exp - now, "seconds");
-    fmt.Println("🕒 Server time:", time.Now().Unix())
-    console.log("🕒 Server time:", time.Now().Unix())
-
-    return !payload.exp || now >= payload.exp;
-  } catch (err) {
-    console.error("❌ JWT parse error:", err);
-    return true;
-  }
-}
 
 
 window.onload = function () {
