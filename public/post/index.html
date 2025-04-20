@@ -2,11 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login - Go JWT App</title>
+  <title>Login - Post Service</title>
+  <script src="/post/js/utils.js"></script>
+  <script>
+    const token = localStorage.getItem("token");
+  alert("Token found? index " + !!token);
+
+  if (token && !isTokenExpired(token)) {
+    window.location.href = "/post/home.html";
+  } else {
+    localStorage.removeItem("token");
+  }
+  </script>
   <script src="/post/js/login.js" defer></script>
 </head>
 <body>
-  <h1>🔐 Login</h1>
+  <h1>🔐 Post Login</h1>
   <form onsubmit="login(event)">
     <label>Username:
       <input type="text" id="username" required />

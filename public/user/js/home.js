@@ -1,6 +1,6 @@
-console.log("✅ home.js loaded");
+console.log("✅ user home.js loaded");
 
-window.onload = async function () {
+(async function () {
   const token = localStorage.getItem("token");
   console.log("📦 Token: ", token);
 
@@ -16,7 +16,6 @@ window.onload = async function () {
   } catch (err) {
     console.error("❌ Failed to decode token:", err);
     localStorage.removeItem("token");
-    //localStorage.clear();
     window.location.href = "/user/index.html";
     return;
   }
@@ -27,7 +26,6 @@ window.onload = async function () {
   if (!payload.exp || now >= payload.exp) {
     alert("⚠️ Session expired. Please login again.");
     localStorage.removeItem("token");
-    // localStorage.clear();
     window.location.href = "/user/index.html";
     return;
   }
@@ -41,8 +39,7 @@ window.onload = async function () {
 
     if (!res.ok) {
       console.warn("❌ Invalid token on server:", res.status);
-      localStorage.removeItem(token);
-      // localStorage.clear();
+      localStorage.removeItem("token");
       alert("Token expired or unauthorized.");
       window.location.href = "/user/index.html";
       return;
@@ -62,7 +59,7 @@ window.onload = async function () {
     alert("Unexpected error occurred.");
     window.location.href = "/user/index.html";
   }
-};
+})();
 
 async function createUser() {
   const name = document.getElementById("userName").value;
