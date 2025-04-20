@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Go JWT App</title>
+  <script src="./js/login.js" defer></script>
+  <script>
+    async function login(event) {
+      event.preventDefault(); // Prevent form submission
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        localStorage.setItem("token", data.token); // ✅ Store token
+        window.location.href = "/user/home.html";  // ✅ Redirect to home
+      } else {
+        alert("❌ Login failed: " + (data.error || "Invalid credentials"));
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>🔐 Login</h1>
+  <form onsubmit="login(event)">
+    <label>Username:
+      <input type="text" id="username" required />
+    </label><br><br>
+
+    <label>Password:
+      <input type="password" id="password" required />
+    </label><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>

@@ -3,37 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Go Project</title>
+  <script src="/user/js/home.js"></script>
   <script>
-    async function fetchPosts() {
-      const res = await fetch("http://localhost:8092/posts"); // Assuming post_service runs on port 8092
-      const posts = await res.json();
-      const table = document.getElementById("postTable");
-      table.innerHTML = "<tr><th>ID</th><th>UserID</th><th>Title</th><th>Body</th></tr>";
-      posts.forEach(post => {
-        table.innerHTML += `<tr><td>${post.id}</td><td>${post.userId}</td><td>${post.title}</td><td>${post.body}</td></tr>`;
-      });
-    }
-
-    async function createPost() {
-      const userId = parseInt(document.getElementById("postUserId").value);
-      const title = document.getElementById("postTitle").value;
-      const body = document.getElementById("postBody").value;
-
-      const res = await fetch("http://localhost:8092/posts", {  // Assuming post_service runs on port 8092
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, title, body })
-      });
-
-      if (res.ok) {
-        alert("✅ Post created successfully!");
-        fetchPosts();
-        document.getElementById("postForm").reset();
-      } else {
-        const errMsg = await res.text();
-        alert("❌ Failed to create post.\n\n" + errMsg);
-      }
-    }
+    
 
     async function fetchUsers() {
       const res = await fetch("http://localhost:8093/users");
@@ -67,25 +39,11 @@
     }
 
     window.onload = function() {
-      fetchPosts();
       fetchUsers();
     };
   </script>
 </head>
 <body>
-  <h2>📚 Posts</h2>
-  <table border="1" id="postTable"></table>
-
-  <h3>➕ Add New Post</h3>
-  <form id="postForm" onsubmit="event.preventDefault(); createPost();">
-    <label>UserID: <input type="number" id="postUserId" required></label><br>
-    <label>Title: <input type="text" id="postTitle" required></label><br>
-    <label>Body: <textarea id="postBody" required></textarea></label><br>
-    <button type="submit">Post</button>
-  </form>
-
-  <hr>
-
   <h2>👤 Users</h2>
   <table border="1" id="userTable"></table>
 

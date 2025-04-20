@@ -25,8 +25,11 @@ func main() {
 	}
 	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
 	data.InitDB()
-	http.HandleFunc("/posts", handlers.PostsHandler)
+	mux := http.NewServeMux()
+
 	fmt.Println("fmt: Server running at http://localhost:8092")
-	http.Handle("/", http.FileServer(http.Dir("../public")))
-	log.Fatal(http.ListenAndServe("0.0.0.0:8092", nil))
+	// http.Handle("/", http.FileServer(http.Dir("../public")))
+	mux.Handle("/post/", http.StripPrefix("/post/", http.FileServer(http.Dir("../public/post"))))
+	http.HandleFunc("/posts", handlers.PostsHandler)
+	log.Fatal(http.ListenAndServe("0.0.0.0:8092", mux))
 }
