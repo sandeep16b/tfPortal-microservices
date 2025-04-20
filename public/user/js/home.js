@@ -1,8 +1,33 @@
+console.log("✅ home.js loaded");
+
 window.onload = async function () {
   const token = localStorage.getItem("token");
+  console.log("📦 Token: ", token);
+
   if (!token) {
-    // ⛔ No token means not logged in → go to login page
-    alert("Please log in first.");
+    alert("⛔ No token. Please login.");
+    window.location.href = "/user/index.html";
+    return;
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(atob(token.split('.')[1]));
+  } catch (err) {
+    console.error("❌ Failed to decode token:", err);
+    localStorage.removeItem("token");
+    //localStorage.clear();
+    window.location.href = "/user/index.html";
+    return;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  console.log("⏱️ Now:", now, "| Exp:", payload.exp);
+
+  if (!payload.exp || now >= payload.exp) {
+    alert("⚠️ Session expired. Please login again.");
+    localStorage.removeItem("token");
+    // localStorage.clear();
     window.location.href = "/user/index.html";
     return;
   }
@@ -13,24 +38,64 @@ window.onload = async function () {
         Authorization: `Bearer ${token}`,
       },
     });
-  
+
     if (!res.ok) {
-      // ⛔ Token is invalid or expired
-      alert("Unauthorized or session expired. Please log in again.");
-      localStorage.removeItem("token"); // Clear invalid token
+      console.warn("❌ Invalid token on server:", res.status);
+      localStorage.removeItem(token);
+      // localStorage.clear();
+      alert("Token expired or unauthorized.");
       window.location.href = "/user/index.html";
       return;
     }
-    // ✅ Load user list
+
     const users = await res.json();
     const table = document.getElementById("userTable");
+    if (!table) return;
+
     table.innerHTML = "<tr><th>ID</th><th>Name</th><th>Username</th><th>Email</th></tr>";
     users.forEach(user => {
       table.innerHTML += `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
     });
+
   } catch (err) {
-    console.error("Error loading users:", err);
-    alert("Something went wrong. Try again later.");
+    console.error("🚨 Error loading users:", err);
+    alert("Unexpected error occurred.");
     window.location.href = "/user/index.html";
   }
 };
+
+async function createUser() {
+  const name = document.getElementById("userName").value;
+  const username = document.getElementById("userUsername").value;
+  const email = document.getElementById("userEmail").value;
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("❌ Session expired. Please log in again.");
+    window.location.href = "/user/index.html";
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:8093/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, username, email }),
+    });
+
+    if (res.ok) {
+      alert("✅ User created successfully!");
+      fetchUsers();
+      document.getElementById("userForm").reset();
+    } else {
+      const error = await res.text();
+      alert("❌ Failed to create user:\n" + error);
+    }
+  } catch (err) {
+    console.error("🚨 Error during user creation:", err);
+    alert("Unexpected error occurred.");
+  }
+}

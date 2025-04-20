@@ -3,6 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Login - Go JWT App</title>
+  <script src="/user/js/utils.js"></script>
+  <script>
+    const token = localStorage.getItem("token");
+  alert("Token found? index " + !!token);
+
+  if (token && !isTokenExpired(token)) {
+    window.location.href = "/user/home.html";
+  } else {
+    localStorage.removeItem("token");
+    //localStorage.clear(); // clear broken or expired
+  }
+  </script>
   <script src="/user/js/login.js" defer></script>
 </head>
 <body>

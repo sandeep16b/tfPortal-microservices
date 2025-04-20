@@ -18,6 +18,7 @@ window.onload = async function () {
       // ⛔ Token is invalid or expired
       alert("Unauthorized or session expired. Please log in again.");
       localStorage.removeItem("token"); // Clear invalid token
+      // localStorage.clear();
       window.location.href = "/post/index.html";
       return;
     }
