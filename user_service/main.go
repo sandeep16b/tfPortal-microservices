@@ -26,20 +26,6 @@ func main() {
 	data.InitDB()
 	mux := http.NewServeMux()
 
-	// // mux.Handle("/", http.FileServer(http.Dir("../public"))) // then static
-	// // mux.Handle("/user/", http.StripPrefix("/user/", http.FileServer(http.Dir("../public"))))
-
-	// 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./public/js"))))
-
-
-	// 	mux.Handle("/user/", http.StripPrefix("/user/", http.FileServer(http.Dir("./public/user"))))
-	// 	fmt.Println("🌐 Server running at http://localhost:8093")
-	// 	dir, _ := ows.Getwd()
-	// fmt.Println("📂 Current Working Directory:", dir)
-
-	// 	mux.HandleFunc("/users", handlers.UsersHandler) // register API first
-	// 	log.Fatal(http.ListenAndServe("0.0.0.0:8093", mux))
-
 	fsUser := http.StripPrefix("/user/", http.FileServer(http.Dir("../public/user")))
 	http.Handle("/user/", fsUser)
 
