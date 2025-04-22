@@ -48,13 +48,29 @@ stages:
       displayName: '📂 Copy Files to EC2 (rsync)'
 
     - script: |
-        echo "🚀 Starting Go microservices on EC2 with setsid"
-        ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
-        pkill -f main || true
-        cd ~/tfPortal-microservices-dev/GoProject/user_service
-        nohup setsid go run main.go > user_app.log 2>&1 &
+        echo "🚀 Starting Go microservices on EC2 with setsid and logging"
+        ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<'EOF'
+        set -e
 
+        echo "🔄 Killing existing Go processes..."
+        pkill -f main || true
+
+        echo "▶️ Starting user_service..."
+        cd ~/tfPortal-microservices-dev/GoProject/user_service
+        nohup setsid go run main.go > user_app.log 2> user_app.err < /dev/null &
+        sleep 2
+        echo "📜 user_service status:"
+        ps aux | grep "[m]ain.go"
+        cat user_app.err || echo "ℹ️ No errors in user_app.err"
+
+        echo "▶️ Starting post_service..."
         cd ~/tfPortal-microservices-dev/GoProject/post_service
-        nohup setsid go run main.go > post_app.log 2>&1 &
+        nohup setsid go run main.go > post_app.log 2> post_app.err < /dev/null &
+        sleep 2
+        echo "📜 post_service status:"
+        ps aux | grep "[m]ain.go"
+        cat post_app.err || echo "ℹ️ No errors in post_app.err"
+
+        echo "✅ Microservices deployed and started"
         EOF
-      displayName: '⚙️ Run Both Go Microservices (setsid)'
+      displayName: '⚙️ Run & Log Go Microservices on EC2'
