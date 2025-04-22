@@ -58,17 +58,19 @@ stages:
         echo "▶️ Starting user_service..."
         cd ~/tfPortal-microservices-dev/GoProject/user_service
         nohup setsid go run main.go > user_app.log 2> user_app.err < /dev/null &
-        sleep 2
-        echo "📜 user_service status:"
-        ps aux | grep "[m]ain.go"
+        sleep 3
+        echo "📜 user_service process check:"
+        ps aux | grep '[m]ain.go' || echo "❗ user_service not found running"
+        echo "📄 user_app.err:"
         cat user_app.err || echo "ℹ️ No errors in user_app.err"
 
         echo "▶️ Starting post_service..."
         cd ~/tfPortal-microservices-dev/GoProject/post_service
         nohup setsid go run main.go > post_app.log 2> post_app.err < /dev/null &
-        sleep 2
-        echo "📜 post_service status:"
-        ps aux | grep "[m]ain.go"
+        sleep 3
+        echo "📜 post_service process check:"
+        ps aux | grep '[m]ain.go' || echo "❗ post_service not found running"
+        echo "📄 post_app.err:"
         cat post_app.err || echo "ℹ️ No errors in post_app.err"
 
         echo "✅ Microservices deployed and started"
