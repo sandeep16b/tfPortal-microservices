@@ -2,39 +2,42 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: tfPortal-ms-aws-self-hosted
+  demands:
+    - Agent.Name -equals tfPortal-ms-dev
 
 variables:
-  EC2_HOST: 'your-ec2-public-ip'
+  EC2_HOST: '54.242.162.37'       # Replace with your actual EC2 IP
   EC2_USER: 'ubuntu'
   PEM_FILE: 'aws-ec2-key.pem'
+  PEM_CONTENT: $(PEM_CONTENT)
 
 stages:
 - stage: Deploy
+  displayName: 🚀 Deploy Go App to EC2
   jobs:
   - job: DeployGoApp
     steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.x'
 
     - script: |
-        echo "Setting up SSH"
+        echo "🔐 Setting up SSH credentials"
         mkdir -p ~/.ssh
-        echo "$(PEM_CONTENT)" > ~/.ssh/${PEM_FILE}
-        chmod 600 ~/.ssh/${PEM_FILE}
-      displayName: 'Prepare SSH'
-
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: 'tfPortal-microservices-dev-aws-ec2-deploy'
-        sourceFolder: '$(Build.SourcesDirectory)/GoProject'
-        contents: '**'
-        targetFolder: '~/tfPortal-microservices-dev'
+        echo "$(PEM_CONTENT)" > ~/.ssh/$(PEM_FILE)
+        chmod 600 ~/.ssh/$(PEM_FILE)
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/$(PEM_FILE)
+      displayName: '🔧 Prepare SSH Key'
 
     - script: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/${PEM_FILE} $(EC2_USER)@$(EC2_HOST) <<EOF
+        echo "📂 Copying Go project files to EC2"
+        scp -i ~/.ssh/$(PEM_FILE) -o StrictHostKeyChecking=no -r ./GoProject $(EC2_USER)@$(EC2_HOST):~/tfPortal-microservices-dev
+      displayName: '📦 Copy Files to EC2'
+
+    - script: |
+        echo "🚀 Starting Go App on EC2"
+        ssh -i ~/.ssh/$(PEM_FILE) -o StrictHostKeyChecking=no $(EC2_USER)@$(EC2_HOST) <<EOF
+        pkill -f main || true
         cd ~/tfPortal-microservices-dev
         nohup go run main.go > app.log 2>&1 &
         EOF
-      displayName: 'Start App on EC2'
+      displayName: '⚙️ Run Go App on EC2'
