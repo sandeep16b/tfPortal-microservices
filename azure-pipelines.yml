@@ -52,6 +52,9 @@ stages:
         ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<'EOF'
         set -e
 
+        # ✅ Ensure Go is available in PATH (adjust if your Go binary path is different)
+        export PATH=$PATH:/usr/local/go/bin
+
         echo "🔄 Killing existing Go processes..."
         pkill -f main || true
 
