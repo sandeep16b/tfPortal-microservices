@@ -1,10 +1,78 @@
-variables:
-- group: AWSSecrets
+trigger:
+- main
 
-steps:
-- script: |
-    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    aws configure set region us-east-1
-    aws s3 ls
-  displayName: 'Access AWS S3'
+pool:
+  name: tfPortal-ms-aws-self-hosted
+  demands:
+    - Agent.Name -equals tfPortal-ms-dev
+
+variables:
+  EC2_HOST: '54.242.162.37'
+  EC2_USER: 'ubuntu'
+  PEM_FILE: 'aws-ec2-key.pem'
+
+stages:
+- stage: Deploy
+  displayName: 🚀 Deploy Go App to EC2
+  jobs:
+  - job: DeployGoApp
+    displayName: 📦 DeployGoApp
+    steps:
+
+    - checkout: self
+
+    - task: Bash@3
+      displayName: '🔐 Decode & Write SSH Key'
+      inputs:
+        targetType: inline
+        script: |
+          echo "🔐 Writing PEM to ~/.ssh"
+          mkdir -p ~/.ssh
+          echo "$PEM_BASE64" | base64 -d > ~/.ssh/${PEM_FILE}
+          chmod 600 ~/.ssh/${PEM_FILE}
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/${PEM_FILE}
+      env:
+        PEM_BASE64: $(PEM_BASE64)
+
+    - script: |
+        echo "📦 Installing rsync if missing"
+        which rsync || (sudo apt-get update && sudo apt-get install -y rsync)
+
+        echo "📂 Syncing project to EC2 using rsync"
+        rsync -avz -e "ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no" \
+          --exclude '.git' \
+          --exclude '*.log' \
+          --exclude 'node_modules' \
+          $(Build.SourcesDirectory)/ ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
+      displayName: '📂 Copy Files to EC2 (rsync)'
+
+    - script: |
+        echo "🚀 Starting Go microservices on EC2 with setsid and logging"
+        ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<'EOF'
+        set -e
+
+        echo "🔄 Killing existing Go processes..."
+        pkill -f main || true
+
+        echo "▶️ Starting user_service..."
+        cd ~/tfPortal-microservices-dev/GoProject/user_service
+        nohup setsid /usr/local/go/bin/go run main.go > user_app.log 2> user_app.err < /dev/null &
+        sleep 3
+        echo "📜 user_service process check:"
+        ps aux | grep '[m]ain.go' || echo "❗ user_service not found running"
+        echo "📄 user_app.err:"
+        cat user_app.err || echo "ℹ️ No errors in user_app.err"
+
+        echo "▶️ Starting post_service..."
+        cd ~/tfPortal-microservices-dev/GoProject/post_service
+        nohup setsid /usr/local/go/bin/go run main.go > post_app.log 2> post_app.err < /dev/null &
+        sleep 3
+        echo "📜 post_service process check:"
+        ps aux | grep '[m]ain.go' || echo "❗ post_service not found running"
+        echo "📄 post_app.err:"
+        cat post_app.err || echo "ℹ️ No errors in post_app.err"
+
+        echo "✅ Microservices deployed and started"
+        EOF
+      displayName: '⚙️ Run & Log Go Microservices on EC2'
