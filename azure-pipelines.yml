@@ -16,9 +16,10 @@ stages:
   displayName: 🚀 Deploy Go App to EC2
   jobs:
   - job: DeployGoApp
+    displayName: 📦 DeployGoApp
     steps:
 
-    - checkout: self  # ✅ Ensures repo is cloned into $(Build.SourcesDirectory)
+    - checkout: self  # ✅ Ensure the repo is downloaded to Build.SourcesDirectory
 
     - task: Bash@3
       displayName: '🔐 Decode & Write SSH Key'
@@ -37,8 +38,7 @@ stages:
     - script: |
         echo "📂 Copying Go project files to EC2"
         scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r --exclude='.git' $(Build.SourcesDirectory) ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
-        displayName: '📦 Copy Files to EC2'
-
+      displayName: '📦 Copy Files to EC2'
 
     - script: |
         echo "🚀 Starting Go App on EC2"
