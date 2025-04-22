@@ -34,7 +34,7 @@ stages:
 
     - script: |
         echo "📂 Copying Go project files to EC2"
-        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r ./GoProject ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
+        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r ./tfPortal-microservices ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
       displayName: '📦 Copy Files to EC2'
 
     - script: |
