@@ -48,12 +48,13 @@ stages:
       displayName: '📂 Copy Files to EC2 (rsync)'
 
     - script: |
-        echo "🚀 Starting Go microservices on EC2"
+        echo "🚀 Starting Go microservices on EC2 with setsid"
         ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
         pkill -f main || true
         cd ~/tfPortal-microservices-dev/GoProject/user_service
-        nohup go run main.go > user_app.log 2>&1 &
+        nohup setsid go run main.go > user_app.log 2>&1 &
+
         cd ~/tfPortal-microservices-dev/GoProject/post_service
-        nohup go run main.go > post_app.log 2>&1 &
+        nohup setsid go run main.go > post_app.log 2>&1 &
         EOF
-      displayName: '⚙️ Run Both Go Microservices'
+      displayName: '⚙️ Run Both Go Microservices (setsid)'
