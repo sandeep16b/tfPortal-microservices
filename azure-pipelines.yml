@@ -27,7 +27,7 @@ stages:
 
     - task: CopyFilesOverSSH@0
       inputs:
-        sshEndpoint: 'aws-ec2-deploy'
+        sshEndpoint: 'tfPortal-microservices-dev-aws-ec2-deploy'
         sourceFolder: '$(Build.SourcesDirectory)/GoProject'
         contents: '**'
         targetFolder: '~/tfPortal-microservices-dev'
