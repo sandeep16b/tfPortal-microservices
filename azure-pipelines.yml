@@ -37,8 +37,8 @@ stages:
 
     - script: |
         echo "📂 Copying Go project files to EC2"
-        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r --exclude='.git' $(Build.SourcesDirectory) ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
-      displayName: '📦 Copy Files to EC2'
+        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r $(Build.SourcesDirectory) ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
+        displayName: '📦 Copy Files to EC2'
 
     - script: |
         echo "🚀 Starting Go App on EC2"
