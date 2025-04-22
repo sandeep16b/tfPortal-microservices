@@ -7,7 +7,7 @@ pool:
     - Agent.Name -equals tfPortal-ms-dev
 
 variables:
-  EC2_HOST: '54.242.162.37'         # Replace with your EC2 IP
+  EC2_HOST: '54.242.162.37'
   EC2_USER: 'ubuntu'
   PEM_FILE: 'aws-ec2-key.pem'
 
@@ -19,27 +19,27 @@ stages:
     steps:
 
     - task: Bash@3
-      displayName: '🔧 Prepare SSH Key'
+      displayName: '🔐 Decode & Write SSH Key'
       inputs:
         targetType: inline
         script: |
-          echo "🔐 Writing PEM file to ~/.ssh"
+          echo "🔐 Decoding PEM and writing to ~/.ssh"
           mkdir -p ~/.ssh
-          echo "$PEM_CONTENT" > ~/.ssh/$(PEM_FILE)
-          chmod 600 ~/.ssh/$(PEM_FILE)
+          echo $PEM_BASE64 | base64 -d > ~/.ssh/${PEM_FILE}
+          chmod 600 ~/.ssh/${PEM_FILE}
           eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/$(PEM_FILE)
+          ssh-add ~/.ssh/${PEM_FILE}
       env:
-        PEM_CONTENT: $(PEM_CONTENT)
+        PEM_BASE64: $(PEM_BASE64)
 
     - script: |
         echo "📂 Copying Go project files to EC2"
-        scp -i ~/.ssh/$(PEM_FILE) -o StrictHostKeyChecking=no -r ./GoProject $(EC2_USER)@$(EC2_HOST):~/tfPortal-microservices-dev
+        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r ./GoProject ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
       displayName: '📦 Copy Files to EC2'
 
     - script: |
         echo "🚀 Starting Go App on EC2"
-        ssh -i ~/.ssh/$(PEM_FILE) -o StrictHostKeyChecking=no $(EC2_USER)@$(EC2_HOST) <<EOF
+        ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
         pkill -f main || true
         cd ~/tfPortal-microservices-dev
         nohup go run main.go > app.log 2>&1 &
