@@ -1,10 +1,40 @@
-variables:
-- group: AWSSecrets
+trigger:
+- main
 
-steps:
-- script: |
-    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    aws configure set region us-east-1
-    aws s3 ls
-  displayName: 'Access AWS S3'
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  EC2_HOST: 'your-ec2-public-ip'
+  EC2_USER: 'ubuntu'
+  PEM_FILE: 'aws-ec2-key.pem'
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: DeployGoApp
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+
+    - script: |
+        echo "Setting up SSH"
+        mkdir -p ~/.ssh
+        echo "$(PEM_CONTENT)" > ~/.ssh/${PEM_FILE}
+        chmod 600 ~/.ssh/${PEM_FILE}
+      displayName: 'Prepare SSH'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: 'aws-ec2-deploy'
+        sourceFolder: '$(Build.SourcesDirectory)/GoProject'
+        contents: '**'
+        targetFolder: '~/tfPortal-microservices-dev'
+
+    - script: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/${PEM_FILE} $(EC2_USER)@$(EC2_HOST) <<EOF
+        cd ~/tfPortal-microservices-dev
+        nohup go run main.go > app.log 2>&1 &
+        EOF
+      displayName: 'Start App on EC2'
