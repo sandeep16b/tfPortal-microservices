@@ -52,15 +52,12 @@ stages:
         ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<'EOF'
         set -e
 
-        # ✅ Ensure Go is available in PATH (adjust if your Go binary path is different)
-        export PATH=$PATH:/usr/local/go/bin
-
         echo "🔄 Killing existing Go processes..."
         pkill -f main || true
 
         echo "▶️ Starting user_service..."
         cd ~/tfPortal-microservices-dev/GoProject/user_service
-        nohup setsid go run main.go > user_app.log 2> user_app.err < /dev/null &
+        nohup setsid /usr/local/go/bin/go run main.go > user_app.log 2> user_app.err < /dev/null &
         sleep 3
         echo "📜 user_service process check:"
         ps aux | grep '[m]ain.go' || echo "❗ user_service not found running"
@@ -69,7 +66,7 @@ stages:
 
         echo "▶️ Starting post_service..."
         cd ~/tfPortal-microservices-dev/GoProject/post_service
-        nohup setsid go run main.go > post_app.log 2> post_app.err < /dev/null &
+        nohup setsid /usr/local/go/bin/go run main.go > post_app.log 2> post_app.err < /dev/null &
         sleep 3
         echo "📜 post_service process check:"
         ps aux | grep '[m]ain.go' || echo "❗ post_service not found running"
