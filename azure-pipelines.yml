@@ -19,14 +19,14 @@ stages:
     displayName: 📦 DeployGoApp
     steps:
 
-    - checkout: self  # ✅ Ensure the repo is downloaded to Build.SourcesDirectory
+    - checkout: self
 
     - task: Bash@3
       displayName: '🔐 Decode & Write SSH Key'
       inputs:
         targetType: inline
         script: |
-          echo "🔐 Decoding PEM and writing to ~/.ssh"
+          echo "🔐 Writing PEM to ~/.ssh"
           mkdir -p ~/.ssh
           echo "$PEM_BASE64" | base64 -d > ~/.ssh/${PEM_FILE}
           chmod 600 ~/.ssh/${PEM_FILE}
@@ -36,9 +36,16 @@ stages:
         PEM_BASE64: $(PEM_BASE64)
 
     - script: |
-        echo "📂 Copying Go project files to EC2"
-        scp -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no -r $(Build.SourcesDirectory) ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
-        displayName: '📦 Copy Files to EC2'
+        echo "📦 Installing rsync if missing"
+        which rsync || sudo apt-get update && sudo apt-get install -y rsync
+
+        echo "📂 Syncing code to EC2 via rsync"
+        rsync -avz -e "ssh -i ~/.ssh/${PEM_FILE} -o StrictHostKeyChecking=no" \
+          --exclude '.git' \
+          --exclude '*.log' \
+          --exclude 'node_modules' \
+          $(Build.SourcesDirectory)/ ${EC2_USER}@${EC2_HOST}:~/tfPortal-microservices-dev
+      displayName: '📦 Copy Files to EC2 (with rsync)'
 
     - script: |
         echo "🚀 Starting Go App on EC2"
@@ -48,3 +55,4 @@ stages:
         nohup go run main.go > app.log 2>&1 &
         EOF
       displayName: '⚙️ Run Go App on EC2'
+
