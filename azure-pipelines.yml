@@ -7,10 +7,9 @@ pool:
     - Agent.Name -equals tfPortal-ms-dev
 
 variables:
-  EC2_HOST: '54.242.162.37'       # Replace with your actual EC2 IP
+  EC2_HOST: '54.242.162.37'         # Replace with your EC2 IP
   EC2_USER: 'ubuntu'
   PEM_FILE: 'aws-ec2-key.pem'
-  PEM_CONTENT: $(PEM_CONTENT)
 
 stages:
 - stage: Deploy
@@ -19,14 +18,19 @@ stages:
   - job: DeployGoApp
     steps:
 
-    - script: |
-        echo "🔐 Setting up SSH credentials"
-        mkdir -p ~/.ssh
-        echo "$(PEM_CONTENT)" > ~/.ssh/$(PEM_FILE)
-        chmod 600 ~/.ssh/$(PEM_FILE)
-        eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/$(PEM_FILE)
+    - task: Bash@3
       displayName: '🔧 Prepare SSH Key'
+      inputs:
+        targetType: inline
+        script: |
+          echo "🔐 Writing PEM file to ~/.ssh"
+          mkdir -p ~/.ssh
+          echo "$PEM_CONTENT" > ~/.ssh/$(PEM_FILE)
+          chmod 600 ~/.ssh/$(PEM_FILE)
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/$(PEM_FILE)
+      env:
+        PEM_CONTENT: $(PEM_CONTENT)
 
     - script: |
         echo "📂 Copying Go project files to EC2"
