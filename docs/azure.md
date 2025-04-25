@@ -12,7 +12,8 @@
 
  ## ipconfig and InvokeRestMethod
 
-| Command                     | Type of IP           | Scope          | Use Case                                      |
-|----------------------------|-----------------------|----------------|-----------------------------------------------|
-| `ipconfig`                 | Internal (Private)    | Local network  | Debugging LAN, router issues                  |
-| `Invoke-RestMethod ...`    | External (Public)     | Internet-wide  | Access to cloud services, whitelisting in Azure |
+| Command                     | Type of IP           | Scope                                                     | Use Case                                                     |
+|------------------------------|-----------------------|------------------------------------------------------------|---------------------------------------------------------------|
+| `ipconfig`                   | Internal (Private)    | Only visible inside your home or office network.           | Debugging your local network, identifying your machine’s LAN IP. |
+| `Invoke-RestMethod ...`       | External (Public)     | This is the IP your ISP assigns to you, visible to the internet. | Needed when accessing cloud services like Azure SQL, VPNs, or APIs that use IP whitelisting. |
+
