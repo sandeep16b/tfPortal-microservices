@@ -6,3 +6,6 @@
  ```bash
  (Invoke-RestMethod -Uri "https://api.ipify.org")
  ```
+ #### Open Azure Portal
+ #### Search for Database
+ #### Go to Security -> networking -> Add your IP address
