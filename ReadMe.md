@@ -21,6 +21,9 @@ GoProject/
 ## AWS
 [AWS Guide](docs/aws.md)
 
+## Azure
+[Azure Guide](docs/azure.md)
+
 ## GIT
 [GIT Guide](docs/git.md)
 
