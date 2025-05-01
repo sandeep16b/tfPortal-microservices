@@ -1,8 +1,12 @@
 # GoPostAPI
 
-A simple Go REST API to fetch and create posts using an SQL Server database (localhost). Initially demonstrated with an external API (`jsonplaceholder.typicode.com`), then migrated to use a local `SQL Server 2019 Express` instance.
+## 🧱 Project Architecture Overview
 
----
+This project consists of multiple Go microservices and an API Gateway, deployed on an AWS EC2 instance with a CI/CD pipeline using Azure DevOps.
+
+### 📁 Microservices Structure
+
+Each microservice (`post_service` and `user_service`) follows a clean layered architecture:
 
 ## 📁 Project Structure
 
@@ -13,6 +17,44 @@ GoProject/
 ├── data/ # DB connection and queries 
 ├── main.go # App entrypoint (routing) 
 └── go.mod # Go module file
+
+## Architecture
+/data        → Repository layer (DB access: CRUD, SQL queries)
+/handlers    → Handler layer (HTTP request entrypoints)
+/models      → Data models (structs for Post, User, etc)
+/services    → Business logic layer (core processing)
+/main.go     → App entry point (router setup, DB connect, start server)
+
+### 🌐 API Gateway: `TFPORTAL-GATEWAY`
+
+This handles all authentication and request routing:
+
+### Architecute Visual Representation
+               ┌────────────────────────┐
+               │      Namecheap DNS     │
+               └────────┬───────────────┘
+                        │
+                        ▼
+                 ┌────────────┐
+                 │   NGINX    │  ⇽⇾ Domain: example.com
+                 └────┬───────┘
+                      │
+                      ▼
+              ┌────────────────┐
+              │ API Gateway    │  ⇽⇾ Handles:
+              │ (TFPORTAL-GATEWAY) │    - JWT Auth
+              └──┬─────────────┘    - CORS
+                 │                  - Reverse Proxy
+         ┌───────┴────────┐
+         │                │
+         ▼                ▼
+┌────────────────┐ ┌────────────────┐
+│ post_service   │ │ user_service   │
+└────────────────┘ └────────────────┘
+         │                │
+         ▼                ▼
+   Shared MySQL DB (on EC2 or RDS)
+
 
 ---
 ## Sql Driver
