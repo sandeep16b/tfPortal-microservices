@@ -20,3 +20,9 @@ git fetch --all
 git pull
 git merge main
 ```
+## Verify and change the user name and email for all git commits and pushes
+```bash
+git config --list --show-origin
+git config --global user.name "Sandeep Bijili" 
+git config --global user.email "sandeep.bijili@example.com" 
+```
